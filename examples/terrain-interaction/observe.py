@@ -67,10 +67,10 @@ class Runtime:
         self.client = module.ObservationClient(client) if observe else client
         self.serial = 0
 
-    def call(self, name, **arguments):
+    def call(self, tool_name, **arguments):
         self.serial += 1
         answer = self.client.send({'jsonrpc': '2.0', 'id': self.serial, 'method': 'tools/call',
-                                   'params': {'name': name, 'arguments': arguments}})
+                                   'params': {'name': tool_name, 'arguments': arguments}})
         if 'error' in answer:
             raise RuntimeError(answer['error'])
         result = answer.get('result', {})
@@ -126,6 +126,12 @@ def main():
             runtime.call('mythos_paths', operation='put', sequence=sequence)
             saved = runtime.call('mythos_paths', operation='get', name=sequence['name'])
             assert saved['sequence']['name'] == sequence['name']
+            original_actions = sequence['steps'][0]['actions']
+            saved_actions = saved['sequence']['steps'][0]['actions']
+            assert len(original_actions) == len(saved_actions)
+            for expected, actual in zip(original_actions, saved_actions):
+                assert expected['type'] == actual['type']
+                assert all(actual['params'].get(k) == v for k, v in expected['params'].items())
             print('已热载入：' + sequence['name'])
         return
     status = runtime.call('mythos_status')

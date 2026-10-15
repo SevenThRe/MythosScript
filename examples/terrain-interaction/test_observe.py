@@ -26,6 +26,16 @@ class PacketDecodeTest(unittest.TestCase):
  def test_truncated_packets_are_not_updates(self):
   with self.assertRaises((ValueError,struct.error)):m.decode({'class':'SPacketBlockChange','hex':'01'})
   with self.assertRaises(ValueError):m.varint(bytes([128])*6,0)
+ def test_named_sequence_read_is_forwarded(self):
+  runtime=object.__new__(m.Runtime);runtime.serial=0
+  class Client:
+   def send(self, message):
+    self.message=message
+    return {'result':{'structuredContent':{'sequence':{'name':'test'}}}}
+  runtime.client=Client()
+  result=runtime.call('mythos_paths',operation='get',name='test')
+  self.assertEqual(result['sequence']['name'],'test')
+  self.assertEqual(runtime.client.message['params']['arguments']['name'],'test')
  def test_native_scripts_only_single_interaction(self):
   import json
   for file in pathlib.Path(__file__).parent.glob('*_单次.json'):
