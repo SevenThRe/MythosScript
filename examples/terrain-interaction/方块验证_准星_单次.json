@@ -1,0 +1,88 @@
+{
+  "sequence": {
+    "name": "方块验证_准星_单次",
+    "category": "方块交互验证",
+    "closeGuiAfterStart": true,
+    "singleExecution": true,
+    "nonInterruptingExecution": false,
+    "note": "热更新原型：一次正常右键，不循环。需先启动只读回包观察器；脚本完成仅表示交互已尝试。",
+    "steps": [
+      {
+        "pos": null,
+        "actions": [
+          {
+            "type": "capture_hotbar",
+            "params": {
+              "varName": "review_hotbar"
+            }
+          },
+          {
+            "type": "capture_inventory_slot",
+            "params": {
+              "varName": "review_offhand",
+              "slotArea": "OFFHAND",
+              "slotIndex": 0
+            }
+          },
+          {
+            "type": "if_else",
+            "params": {
+              "conditionsText": "review_hotbar_selected_found || review_offhand_found",
+              "thenCount": 2,
+              "elseCount": 0
+            }
+          },
+          {
+            "type": "system_message",
+            "params": {
+              "message": "[方块校验] 请将主手和副手都清空，再运行。"
+            }
+          },
+          {
+            "type": "stop_current_sequence",
+            "params": {}
+          },
+          {
+            "type": "if_else",
+            "params": {
+              "conditionsText": "current_screen != ''",
+              "thenCount": 2,
+              "elseCount": 0
+            }
+          },
+          {
+            "type": "system_message",
+            "params": {
+              "message": "[方块校验] 当前有界面打开，已取消交互。"
+            }
+          },
+          {
+            "type": "stop_current_sequence",
+            "params": {}
+          },
+          {
+            "type": "system_message",
+            "params": {
+              "message": "[方块校验] 即将对当前准星执行一次正常右键，请只对准可触及方块。"
+            }
+          },
+          {
+            "type": "click",
+            "params": {
+              "locatorMode": "COORDINATE",
+              "x": 0,
+              "y": 0,
+              "left": false
+            }
+          },
+          {
+            "type": "system_message",
+            "params": {
+              "message": "[方块校验] 右键已尝试；是否收到目标坐标更新，以回包观察结果为准。"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

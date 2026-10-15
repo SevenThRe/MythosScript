@@ -1,0 +1,230 @@
+{
+  "sequences": [
+    {
+      "name": "方块验证_准星_单次",
+      "category": "方块交互验证",
+      "closeGuiAfterStart": true,
+      "singleExecution": true,
+      "nonInterruptingExecution": false,
+      "note": "热更新原型：一次正常右键，不循环。需先启动只读回包观察器；脚本完成仅表示交互已尝试。",
+      "steps": [
+        {
+          "actions": [
+            {
+              "type": "capture_hotbar",
+              "params": {
+                "varName": "review_hotbar"
+              }
+            },
+            {
+              "type": "capture_inventory_slot",
+              "params": {
+                "varName": "review_offhand",
+                "slotArea": "OFFHAND",
+                "slotIndex": 0
+              }
+            },
+            {
+              "type": "if_else",
+              "params": {
+                "conditionsText": "review_hotbar_selected_found || review_offhand_found",
+                "thenCount": 2,
+                "elseCount": 0
+              }
+            },
+            {
+              "type": "system_message",
+              "params": {
+                "message": "[方块校验] 请将主手和副手都清空，再运行。"
+              }
+            },
+            {
+              "type": "stop_current_sequence",
+              "params": {}
+            },
+            {
+              "type": "if_else",
+              "params": {
+                "conditionsText": "current_screen != ''",
+                "thenCount": 2,
+                "elseCount": 0
+              }
+            },
+            {
+              "type": "system_message",
+              "params": {
+                "message": "[方块校验] 当前有界面打开，已取消交互。"
+              }
+            },
+            {
+              "type": "stop_current_sequence",
+              "params": {}
+            },
+            {
+              "type": "system_message",
+              "params": {
+                "message": "[方块校验] 即将对当前准星执行一次正常右键，请只对准可触及方块。"
+              }
+            },
+            {
+              "type": "click",
+              "params": {
+                "locatorMode": "COORDINATE",
+                "x": 0,
+                "y": 0,
+                "left": false
+              }
+            },
+            {
+              "type": "system_message",
+              "params": {
+                "message": "[方块校验] 右键已尝试；是否收到目标坐标更新，以回包观察结果为准。"
+              }
+            }
+          ],
+          "goto": [
+            null,
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "name": "方块验证_脚下_单次",
+      "category": "方块交互验证",
+      "closeGuiAfterStart": true,
+      "singleExecution": true,
+      "nonInterruptingExecution": false,
+      "note": "热更新原型：一次正常右键，不循环。需先启动只读回包观察器；脚本完成仅表示交互已尝试。",
+      "steps": [
+        {
+          "actions": [
+            {
+              "type": "capture_hotbar",
+              "params": {
+                "varName": "review_hotbar"
+              }
+            },
+            {
+              "type": "capture_inventory_slot",
+              "params": {
+                "varName": "review_offhand",
+                "slotArea": "OFFHAND",
+                "slotIndex": 0
+              }
+            },
+            {
+              "type": "if_else",
+              "params": {
+                "conditionsText": "review_hotbar_selected_found || review_offhand_found",
+                "thenCount": 2,
+                "elseCount": 0
+              }
+            },
+            {
+              "type": "system_message",
+              "params": {
+                "message": "[方块校验] 请将主手和副手都清空，再运行。"
+              }
+            },
+            {
+              "type": "stop_current_sequence",
+              "params": {}
+            },
+            {
+              "type": "if_else",
+              "params": {
+                "conditionsText": "current_screen != ''",
+                "thenCount": 2,
+                "elseCount": 0
+              }
+            },
+            {
+              "type": "system_message",
+              "params": {
+                "message": "[方块校验] 当前有界面打开，已取消交互。"
+              }
+            },
+            {
+              "type": "stop_current_sequence",
+              "params": {}
+            },
+            {
+              "type": "if_else",
+              "params": {
+                "conditionsText": "!player.on_ground",
+                "thenCount": 2,
+                "elseCount": 0
+              }
+            },
+            {
+              "type": "system_message",
+              "params": {
+                "message": "[方块校验] 请站稳后校验脚下方块。"
+              }
+            },
+            {
+              "type": "stop_current_sequence",
+              "params": {}
+            },
+            {
+              "type": "set_var",
+              "params": {
+                "name": "review_x",
+                "expression": "player_block_x"
+              }
+            },
+            {
+              "type": "set_var",
+              "params": {
+                "name": "review_y",
+                "expression": "floor(player_y - 0.01)"
+              }
+            },
+            {
+              "type": "set_var",
+              "params": {
+                "name": "review_z",
+                "expression": "player_block_z"
+              }
+            },
+            {
+              "type": "set_var",
+              "params": {
+                "name": "sequence.review_pos",
+                "expression": "[review_x, review_y, review_z]"
+              }
+            },
+            {
+              "type": "system_message",
+              "params": {
+                "message": "[方块校验] 脚下 ${review_x},${review_y},${review_z}；交互前缓存由只读观察器保存。"
+              }
+            },
+            {
+              "type": "rightclickblock",
+              "params": {
+                "locatorMode": "POSITION",
+                "pos": "${sequence.review_pos}",
+                "range": 4.5,
+                "preserveView": true
+              }
+            },
+            {
+              "type": "system_message",
+              "params": {
+                "message": "[方块校验] 右键已安排；成功与否以目标坐标的服务器更新包为准。"
+              }
+            }
+          ],
+          "goto": [
+            null,
+            null,
+            null
+          ]
+        }
+      ]
+    }
+  ]
+}
