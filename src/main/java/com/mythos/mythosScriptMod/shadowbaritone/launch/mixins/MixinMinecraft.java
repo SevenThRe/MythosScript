@@ -94,7 +94,8 @@ public class MixinMinecraft {
         }
 
         @Unique
-        private BiFunction<EventState, TickEvent.Type, TickEvent> tickProvider;
+        // Explicitly isolate the erased BiFunction slot from external Baritone mixins.
+        private BiFunction<EventState, TickEvent.Type, TickEvent> mythosScript$tickProvider;
 
         @Unique
         private Minecraft mythos$getMinecraft() {
@@ -118,20 +119,20 @@ public class MixinMinecraft {
 
         @Inject(method = "runTick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "net/minecraft/client/Minecraft.currentScreen:Lnet/minecraft/client/gui/GuiScreen;", ordinal = 0, shift = At.Shift.BEFORE), slice = @Slice(from = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "net/minecraft/client/Minecraft.leftClickCounter:I")))
         private void runTick(CallbackInfo ci) {
-                this.tickProvider = TickEvent.createNextProvider();
+                this.mythosScript$tickProvider = TickEvent.createNextProvider();
 
                 for (IBaritone baritone : BaritoneAPI.getProvider().getAllBaritones()) {
                         TickEvent.Type type = baritone.getPlayerContext().player() != null
                                         && baritone.getPlayerContext().world() != null
                                                         ? TickEvent.Type.IN
                                                         : TickEvent.Type.OUT;
-                        baritone.getGameEventHandler().onTick(this.tickProvider.apply(EventState.PRE, type));
+                        baritone.getGameEventHandler().onTick(this.mythosScript$tickProvider.apply(EventState.PRE, type));
                 }
         }
 
         @Inject(method = "runTick", at = @At("RETURN"))
         private void postRunTick(CallbackInfo ci) {
-                if (this.tickProvider == null) {
+                if (this.mythosScript$tickProvider == null) {
                         return;
                 }
 
@@ -140,10 +141,10 @@ public class MixinMinecraft {
                                         && baritone.getPlayerContext().world() != null
                                                         ? TickEvent.Type.IN
                                                         : TickEvent.Type.OUT;
-                        baritone.getGameEventHandler().onPostTick(this.tickProvider.apply(EventState.POST, type));
+                        baritone.getGameEventHandler().onPostTick(this.mythosScript$tickProvider.apply(EventState.POST, type));
                 }
 
-                this.tickProvider = null;
+                this.mythosScript$tickProvider = null;
         }
 
         @Inject(method = "runTick", at = @At(value = "INVOKE", target = "net/minecraft/client/multiplayer/WorldClient.updateEntities()V", shift = At.Shift.AFTER))

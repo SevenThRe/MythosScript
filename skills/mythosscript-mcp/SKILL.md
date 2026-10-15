@@ -7,6 +7,8 @@ Use the available mythos_* tools. If the host has no MCP connection, use [script
 
 ## Default operating mode
 
+- With `client.py --observe-only`, use only the advertised observation tools and operations. It supports snapshots, events and packet capture controls, but rejects gameplay, packet replay, GUI input, configuration writes and clearing packet history. Do not switch to an unrestricted connection to bypass that selection; use the ordinary full bridge only when the user explicitly asks for those capabilities. This restriction belongs to the selected bridge connection, not every game-side HTTP client.
+
 - Use a silent, JSON-first workflow by default. When the user asks to change a persistent setting and does not explicitly ask to operate the interface, do not call `mythos_gui` (including `inspect` or `open`) and do not open or reveal a GUI.
 - Use `mythos_config` to read the relevant JSON, then use `patch` for targeted single- or multi-field changes or `write` for a complete edited value. Pass `expectedHash` from the read to prevent lost updates; preserve unknown fields and existing entries.
 - After a persistent configuration write, reload its owning module with `mythos_modules`, then read the configuration or runtime state back to verify the change. Do not claim that a disk write is active until the owner has been reloaded and the result checked.
