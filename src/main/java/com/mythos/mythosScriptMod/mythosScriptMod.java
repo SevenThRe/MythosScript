@@ -259,6 +259,7 @@ public class mythosScriptMod {
         ClientCommandHandler.instance.registerCommand(new BaritoneChatCommand());
         ClientCommandHandler.instance.registerCommand(new RunNodeSequenceCommand());
         LOGGER.info("/copy 与 /run_node_sequence 命令已注册。");
+        MinecraftForge.EVENT_BUS.register(com.mythos.mythosScriptMod.utils.TerrainBlockReview.INSTANCE);
         MythosScriptMcpServer.start();
     }
 

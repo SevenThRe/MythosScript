@@ -295,7 +295,8 @@ public final class McpGameService implements McpProtocol.Backend {
             case "mythos_discover":
                 return object("configRoot", Paths.get(ModConfig.CONFIG_DIR).toAbsolutePath().toString(),
                         "profile", ProfileManager.getActiveProfileName(), "profileDirectory", ProfileManager.getCurrentProfileDir().toString(),
-                        "localPid", McpClientHub.currentPid(),
+                        "terrainReview", com.mythos.mythosScriptMod.utils.TerrainBlockReview.INSTANCE.snapshot(),
+                "localPid", McpClientHub.currentPid(),
                         "actionCount", ActionDisplayCatalog.getActionDisplayKeys().size(),
                         "templateCount", ActionTemplateCatalog.getTemplates().size(),
                         "observationGroups", McpEventJournal.GROUPS,

@@ -171,6 +171,8 @@ public class TerrainScannerHandler {
                 // 添加元数据
                 resultJson.addProperty("scanTimestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                 resultJson.addProperty("scanRadius", finalRadius);
+                resultJson.addProperty("source", "client_world_cache");
+                resultJson.addProperty("hiddenWorldTruthVerified", false);
                 JsonObject centerPosJson = new JsonObject();
                 centerPosJson.addProperty("x", center.getX());
                 centerPosJson.addProperty("y", center.getY());

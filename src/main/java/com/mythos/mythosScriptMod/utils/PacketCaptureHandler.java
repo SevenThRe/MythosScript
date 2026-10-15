@@ -686,6 +686,7 @@ public class PacketCaptureHandler extends ChannelDuplexHandler {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         com.mythos.mythosScriptMod.mcp.McpObservation.INSTANCE.packet(ctx.channel(), msg, false);
+        TerrainBlockReview.INSTANCE.packet(ctx.channel(), msg, false);
         boolean inboundFeatureEnabled = PerformanceMonitor.isFeatureEnabled("packet_capture_inbound");
         boolean businessProcessingEnabled = isBusinessProcessingEnabled();
         PerformanceMonitor.PerformanceTimer timer = PerformanceMonitor.startTimer("packet_capture_inbound");
@@ -998,6 +999,7 @@ public class PacketCaptureHandler extends ChannelDuplexHandler {
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         com.mythos.mythosScriptMod.mcp.McpObservation.INSTANCE.packet(ctx.channel(), msg, true);
+        TerrainBlockReview.INSTANCE.packet(ctx.channel(), msg, true);
         boolean outboundFeatureEnabled = PerformanceMonitor.isFeatureEnabled("packet_capture_outbound");
         boolean businessProcessingEnabled = isBusinessProcessingEnabled();
         PerformanceMonitor.PerformanceTimer timer = PerformanceMonitor.startTimer("packet_capture_outbound");

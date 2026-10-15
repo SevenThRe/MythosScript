@@ -31,8 +31,8 @@ public final class ModernTerrainScannerSettingsTab implements ModernSettingsTab 
     private static final int MAX_RADIUS = 50;
     private static final int ROW_HEIGHT = 24;
     private static final int PANEL_HEADER_HEIGHT = 44;
-    private static final int CONTROL_HEIGHT_WIDE = 54;
-    private static final int CONTROL_HEIGHT_COMPACT = 78;
+    private static final int CONTROL_HEIGHT_WIDE = 104;
+    private static final int CONTROL_HEIGHT_COMPACT = 136;
     private static final int CONTENT_LINE_HEIGHT = 10;
 
     private enum Confirmation {
@@ -70,6 +70,7 @@ public final class ModernTerrainScannerSettingsTab implements ModernSettingsTab 
     private ModernMainLayout.Rect scanBounds;
     private ModernMainLayout.Rect refreshBounds;
     private ModernMainLayout.Rect clearBounds;
+    private ModernMainLayout.Rect reviewAimBounds, reviewFeetBounds;
     private ModernMainLayout.Rect recordsPanelBounds;
     private ModernMainLayout.Rect recordsViewportBounds;
     private ModernMainLayout.Rect dividerBounds;
@@ -144,7 +145,7 @@ public final class ModernTerrainScannerSettingsTab implements ModernSettingsTab 
 
         boolean compact = panelBounds.width < 500;
         boolean stackedPanels = compact && panelBounds.height >= 280;
-        int controlHeight = compact && stackedPanels ? CONTROL_HEIGHT_COMPACT : CONTROL_HEIGHT_WIDE;
+        int controlHeight = compact ? CONTROL_HEIGHT_COMPACT : CONTROL_HEIGHT_WIDE;
         controlPanelBounds = new ModernMainLayout.Rect(panelBounds.x + 9, panelBounds.y + PANEL_HEADER_HEIGHT + 8,
                 Math.max(1, panelBounds.width - 18), controlHeight);
         drawControls(fontRenderer, compact, mouseX, mouseY);
@@ -181,6 +182,10 @@ public final class ModernTerrainScannerSettingsTab implements ModernSettingsTab 
 
         if (contains(scanBounds, mouseX, mouseY)) {
             startScan();
+            return true;
+        }
+        if (contains(reviewAimBounds, mouseX, mouseY) || contains(reviewFeetBounds, mouseX, mouseY)) {
+            com.mythos.mythosScriptMod.utils.TerrainBlockReview.INSTANCE.request(contains(reviewFeetBounds, mouseX, mouseY));
             return true;
         }
         if (contains(refreshBounds, mouseX, mouseY)) {
@@ -407,6 +412,21 @@ public final class ModernTerrainScannerSettingsTab implements ModernSettingsTab 
         } else {
             drawWideControls(fontRenderer, mouseX, mouseY);
         }
+        drawReviewControls(fontRenderer, compact, mouseX, mouseY);
+    }
+
+    private void drawReviewControls(FontRenderer fontRenderer, boolean compact, int mouseX, int mouseY) {
+        int x = controlPanelBounds.x + 8;
+        int y = controlPanelBounds.y + (compact ? 88 : 58);
+        int w = Math.max(1, Math.min(108, (controlPanelBounds.width - 22) / 2));
+        reviewAimBounds = new ModernMainLayout.Rect(x, y, w, 21);
+        reviewFeetBounds = new ModernMainLayout.Rect(x + w + 6, y, w, 21);
+        drawActionButton(fontRenderer, reviewAimBounds, "terrain.review.aim", true, false, false, mouseX, mouseY);
+        drawActionButton(fontRenderer, reviewFeetBounds, "terrain.review.feet", true, false, false, mouseX, mouseY);
+        ModernUiRenderer.drawText(fontRenderer, com.mythos.mythosScriptMod.utils.TerrainBlockReview.INSTANCE.label(),
+                x, y + 27, ModernUiRenderer.SUBTLE_TEXT, Math.max(20, controlPanelBounds.width - 16));
+        if (reviewAimBounds.contains(mouseX, mouseY) || reviewFeetBounds.contains(mouseX, mouseY))
+            hoveredTooltip = I18n.format("terrain.review.hint");
     }
 
     private void drawWideControls(FontRenderer fontRenderer, int mouseX, int mouseY) {

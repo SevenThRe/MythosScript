@@ -83,3 +83,13 @@ python -m unittest discover -s tools -p 'test_mcp*.py' -v
 
 完整上游协议与字段见 [README_MCP.md](README_MCP.md) 和
 [观测语义](skills/mythosscript-mcp/references/observations.md)。
+
+## 单目标方块交互复核
+
+现代菜单 → 调试 → 地形扫描，新增「右键校验准星」「右键校验脚下」。主手必须空手，目标需在原生交互距离内且射线无遮挡。每次只校验一个目标，间隔至少一秒，五秒超时。正常右键可能打开容器或切换方块。
+
+记录交互前客户端状态、坐标/维度、对应连接的出站交互观察和入站 `SPacketBlockChange` / `SPacketMultiBlockChange`。只有出站交互之后观察到同一连接、同一坐标的更新才显示「服务器已下发」；没有请求 ID，因此这是时间和坐标关联，不是严格的因果确认。包在客户端过滤/应用前采样，不能保证已应用，更不能证明服务端隐藏地形的真实存储值。超时表示未验证，不表示方块未变化。
+
+结果写到当前配置档 `terrain/review-*.json`，点击「刷新」可查看。AI 可通过只读 `mythos_status.terrainReview` 读取最近结果，观察连接不会主动触发交互。普通区域扫描新增 `source=client_world_cache` 和 `hiddenWorldTruthVerified=false`；旧扫描记录不追溯改写。此次没有增加挖掘包发送、批量探测或整片隐藏地形还原。
+
+验证：离线状态机回归覆盖出站之前的回包、连接/坐标不匹配、空气/相同方块回包、超时、世界切换和快照隔离。实际服务器交互仍需重启客户端后验收。
